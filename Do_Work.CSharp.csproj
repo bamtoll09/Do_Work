@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{489BE681-E29A-439C-3DE3-19DC82A25716}</ProjectGuid>
+    <ProjectGuid>{F1ECDADF-CA67-BCF2-E4A1-6E060774E17D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Assembly-CSharp</AssemblyName>
     <FileAlignment>512</FileAlignment>
@@ -69,8 +69,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Script\DanEE.cs" />
-    <Compile Include="Assets\Script\GameController.cs" />
+    <Compile Include="Assets\Scene1\Script\GameController.cs" />
+    <Compile Include="Assets\Scene1\Script\SoundManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
