@@ -21,7 +21,10 @@ public class DanEE : MonoBehaviour {
         if (Input.touchCount != 0)
         {
             if (Input.GetTouch(0).phase == TouchPhase.Began)
+            {
                 touchCount++;
+                GameController.instance.setTextCount();
+            }
         }
 
         if (touchCount == 0 && !sr.color.Equals(Color.white))
