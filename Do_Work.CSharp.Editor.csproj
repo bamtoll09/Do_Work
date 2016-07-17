@@ -117,8 +117,9 @@
     <Compile Include="Assets\nhn_starfish\Editor\SFBitmapFontImporter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\font\asdf.fnt" />
-    <None Include="Assets\nhn_starfish\Example\Resources\data\asdf_0.txt" />
+    <None Include="Assets\Image\ingame\fruit\774.36.txt" />
+    <None Include="Assets\nhn_starfish\Example\Resources\data\DTC_0.txt" />
+    <None Include="Assets\nhn_starfish\Example\Resources\data\DotumChe_1.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

@@ -69,12 +69,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Script\DanEE.cs" />
+    <Compile Include="Assets\Script\Environment.cs" />
+    <Compile Include="Assets\Script\FruitManager.cs" />
+    <Compile Include="Assets\Script\FruitStorage.cs" />
     <Compile Include="Assets\Script\GameController.cs" />
+    <Compile Include="Assets\Script\Info.cs" />
+    <Compile Include="Assets\Script\Mouse.cs" />
+    <Compile Include="Assets\Script\SceneManager.cs" />
+    <Compile Include="Assets\Script\Setting.cs" />
+    <Compile Include="Assets\Script\Shop.cs" />
+    <Compile Include="Assets\Script\SoundManager.cs" />
+    <Compile Include="Assets\Script\Upgrade.cs" />
+    <Compile Include="Assets\Script\WeatherManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\font\asdf.fnt" />
-    <None Include="Assets\nhn_starfish\Example\Resources\data\asdf_0.txt" />
+    <None Include="Assets\Image\ingame\fruit\774.36.txt" />
+    <None Include="Assets\nhn_starfish\Example\Resources\data\DTC_0.txt" />
+    <None Include="Assets\nhn_starfish\Example\Resources\data\DotumChe_1.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
