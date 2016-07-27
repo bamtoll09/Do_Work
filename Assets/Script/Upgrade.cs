@@ -28,10 +28,13 @@ public class Upgrade : MonoBehaviour {
     // (int) Math.round();
 
     float times = 0.0f;
+    float saveTime = 0.0f;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
+        GetData();
+
         setText(햄, Costof햄스터);
         setText(외, Costof외관);
         setText(싸, Costof싸게);
@@ -61,6 +64,14 @@ public class Upgrade : MonoBehaviour {
 
         if (피버On)
             times += Time.deltaTime;
+        
+        if (saveTime >= GameController.saveDelay)
+        {
+            SaveData();
+            saveTime = 0.0f;
+        }
+
+        saveTime += Time.deltaTime;
     }
 
     void setText(Text text, int cost)
@@ -88,6 +99,35 @@ public class Upgrade : MonoBehaviour {
         text.text = sb2.ToString();
     }
 
+    void GetData()
+    {
+        햄스터On = bool.Parse(PlayerPrefs.GetString("햄스터On", "false"));
+        햄스터Delay = PlayerPrefs.GetFloat("햄스터Delay", 30.0f);
+        싸게싸게 = PlayerPrefs.GetInt("싸게싸게", 0);
+        피버On = bool.Parse(PlayerPrefs.GetString("피버On", "false"));
+        렛츠파뤼롹엔롤 = PlayerPrefs.GetFloat("피버Delay", 120.0f);
+        날씨퍼센트 = PlayerPrefs.GetInt("날씨퍼센트", 50);
+        창최몇 = PlayerPrefs.GetInt("창최몇", 5);
+
+        Costof햄스터 = PlayerPrefs.GetInt("Costof햄스터", 45);
+        Costof외관 = PlayerPrefs.GetInt("Costof외관", 60);
+        Costof싸게 = PlayerPrefs.GetInt("Costof싸게", 35);
+        Costof홍보 = PlayerPrefs.GetInt("Costof홍보", 45);
+        Costof날씨 = PlayerPrefs.GetInt("Costof날씨", 30);
+        Costof창고 = PlayerPrefs.GetInt("Costof창고", 55);
+    }
+
+    void SaveData()
+    {
+        PlayerPrefs.GetString("햄스터On", 햄스터On.ToString());
+        햄스터Delay = PlayerPrefs.GetFloat("햄스터Delay", 30.0f);
+        싸게싸게 = PlayerPrefs.GetInt("싸게싸게", 0);
+        피버On = bool.Parse(PlayerPrefs.GetString("피버On", "false"));
+        렛츠파뤼롹엔롤 = PlayerPrefs.GetFloat("피버Delay", 120.0f);
+        날씨퍼센트 = PlayerPrefs.GetInt("날씨퍼센트", 50);
+        창최몇 = PlayerPrefs.GetInt("창최몇", 5);
+    }
+
     public void MrAssistHam() // 보조 햄스터
     {
         if (GameController.totalMoney >= Costof햄스터)
@@ -100,6 +140,7 @@ public class Upgrade : MonoBehaviour {
             GameController.instance.addMoney(-Costof햄스터);
             Costof햄스터 = (int)Mathf.Round(Costof햄스터 * 1.6f);
             setText(햄, Costof햄스터);
+            SoundManager.instance.playBuyShop();
         }
     }
 
@@ -112,6 +153,7 @@ public class Upgrade : MonoBehaviour {
             GameController.instance.addMoney(-Costof외관);
             Costof외관 = (int)Mathf.Round(Costof외관 * 1.6f);
             setText(외, Costof외관);
+            SoundManager.instance.playBuyShop();
         }
     }
 
@@ -123,6 +165,7 @@ public class Upgrade : MonoBehaviour {
             싸게싸게++;
             Costof싸게 = (int)Mathf.Round(Costof싸게 * 1.6f);
             setText(싸, Costof싸게);
+            SoundManager.instance.playBuyShop();
         }
     }
 
@@ -137,6 +180,7 @@ public class Upgrade : MonoBehaviour {
                 렛츠파뤼롹엔롤 -= 2.0f;
             Costof홍보 = (int)Mathf.Round(Costof홍보 * 1.6f);
             setText(홍, Costof홍보);
+            SoundManager.instance.playBuyShop();
         }
     }
 
@@ -152,6 +196,7 @@ public class Upgrade : MonoBehaviour {
             GameController.instance.addMoney(-Costof날씨);
             Costof날씨 = (int)Mathf.Round(Costof날씨 * 1.7f);
             setText(날, Costof날씨);
+            SoundManager.instance.playBuyShop();
         }
     }
 
@@ -164,6 +209,7 @@ public class Upgrade : MonoBehaviour {
             GameController.instance.addMoney(-Costof창고);
             Costof창고 = (int)Mathf.Round(Costof창고 * 1.6f);
             setText(창, Costof창고);
+            SoundManager.instance.playBuyShop();
         }
     }
 }

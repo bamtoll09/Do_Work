@@ -22,8 +22,7 @@ public class Shop : MonoBehaviour {
         {
             animator.SetBool("isOpened", true);
             isOpened = true;
-            GameController.canEscape = false;
-            Debug.Log(GameController.canEscape);
+            Debug.Log("Shop: " + isOpened);
         }
     }
 
@@ -33,8 +32,7 @@ public class Shop : MonoBehaviour {
         {
             animator.SetBool("isOpened", false);
             isOpened = false;
-            GameController.canEscape = true;
-            Debug.Log(GameController.canEscape);
+            Debug.Log("Shop: " + isOpened);
         }
     }
 }

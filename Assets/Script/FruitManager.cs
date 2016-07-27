@@ -10,23 +10,31 @@ public class FruitManager : MonoBehaviour {
     public List<GameObject> autumnFruits;
     public List<GameObject> winterFruits;
     public List<GameObject> dishes; // y +0.89
+    public List<GameObject> fruits = new List<GameObject>(8);
     public GameObject mouse; // x -1.6, y -0.5
     public Collider2D[] dishCollider = new Collider2D[6];
     Vector3 reverse = new Vector3(1, -1, 1);
 
-    public int[] defaultPrice = { 3, 5, 7, 12 };
-    public int[] minPrice = { 1, 2, 2, 7 };
-    public int[] maxPrice = {5, 8, 12, 17};
+    public int[] defaultPrice = { 3, 5, 7, 12 }; // 과일 기본 금액
+    public int[] currentPrice = { 0, 0, 0, 0 }; // 과일 현재 금액
+    public int[] minPrice = { 1, 2, 2, 7 }; // 과일 최소 금액
+    public int[] maxPrice = {5, 8, 12, 17}; // 과일 최대 금액
+    public int[] changePrice = { 2, 3, 5, 5 }; // 과일 변동 금액
+    public int[] fruitsInfo = new int[8];
     public int sellTimeMin = 1; // 최소 5
     public int sellTimeMax = 5;
-    int[] fruitPos = new int[8];
     int fruitIndex = 0;
     int dishIndex = 0;
     float times = 0.0f;
+    float saveTime = 0.0f;
+    float saveDelay = 60.0f;
 
     void Awake()
     {
         instance = this;
+
+        if (currentPrice[0] == 0)
+            currentPrice = defaultPrice;
     }
 
     // Use this for initialization
@@ -34,15 +42,16 @@ public class FruitManager : MonoBehaviour {
         for (int i = 0; i < dishes.Count; i++)
             dishes[i].transform.localScale = reverse;
 
-        for (int i = 0; i < 8; i++)
-        {
-            springFruits[i].SetActive(false);
-            summerFruits[i].SetActive(false);
-            autumnFruits[i].SetActive(false);
-            winterFruits[i].SetActive(false);
-        }
-        autumnFruits[8].SetActive(false);
+        //for (int i = 0; i < 8; i++)
+        //{
+        //    springFruits[i].SetActive(false);
+        //    summerFruits[i].SetActive(false);
+        //    autumnFruits[i].SetActive(false);
+        //    winterFruits[i].SetActive(false);
+        //}
+        //autumnFruits[8].SetActive(false);
         mouse.SetActive(false);
+        changeSeason();
 	}
 	
 	// Update is called once per frame
@@ -55,7 +64,6 @@ public class FruitManager : MonoBehaviour {
 
         if (Upgrade.햄스터On && times >= Upgrade.햄스터Delay && isEmpty())
         {
-            Instantiate(springFruits[0]);
             int index = 0;
 
             do
@@ -82,7 +90,7 @@ public class FruitManager : MonoBehaviour {
                     Spawn_WinterFruits(index);
                     break;
             }
-            dishes[index].transform.localScale = Vector3.one;
+            SoundManager.instance.playHamster();
 
             times = 0.0f;
         }
@@ -92,34 +100,36 @@ public class FruitManager : MonoBehaviour {
         {
             if (Input.GetTouch(0).phase == TouchPhase.Ended)
             {
-                //for (int i = 0; i < dishes.Count; i++)
-                //{
-                //    if (dishCollider[i] == Physics2D.OverlapPoint(Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position)))
-                //    {
-                //        if (dishes[i].transform.localScale.Equals(reverse) && isEmpty())
-                //        {
-                //            switch (GameController.SEASON)
-                //            {
-                //                case "Spring":
-                //                    Spawn_SpringFruits(i);
-                //                    break;
+                for (int i = 0; i < dishes.Count; i++)
+                {
+                    if (dishCollider[i] == Physics2D.OverlapPoint(Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position)))
+                    {
+                        if (dishes[i].transform.localScale.Equals(reverse) && isEmpty())
+                        {
+                            switch (GameController.SEASON)
+                            {
+                                case "Spring":
+                                    Spawn_SpringFruits(i);
+                                    break;
 
-                //                case "Summer":
-                //                    Spawn_SummerFruits(i);
-                //                    break;
+                                case "Summer":
+                                    Spawn_SummerFruits(i);
+                                    break;
 
-                //                case "Autumn":
-                //                    Spawn_AutumnFruits(i);
-                //                    break;
+                                case "Autumn":
+                                    Spawn_AutumnFruits(i);
+                                    break;
 
-                //                case "Winter":
-                //                    Spawn_WinterFruits(i);
-                //                    break;
-                //            }
-                //        }
-                //    }
-                //}
-                Instantiate(springFruits[Random.Range(0, 4)], Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position), Quaternion.identity);
+                                case "Winter":
+                                    Spawn_WinterFruits(i);
+                                    break;
+                            }
+
+                            SoundManager.instance.playDish();
+                        }
+                    }
+                }
+                //Instantiate(springFruits[Random.Range(0, 4)], Camera.main.ScreenToWorldPoint(Input.GetTouch(0).position), Quaternion.identity);
             }
         }
 
@@ -134,13 +144,13 @@ public class FruitManager : MonoBehaviour {
             {
                 int index = 0;
                 do
-                    index = Random.Range(0, fruitPos.Length);
+                    index = Random.Range(0, dishes.Count);
                 while (dishes[index].transform.localScale.Equals(reverse));
 
-                springFruits[fruitPos[index]].SetActive(false);
+                Destroy(fruits[index]);
                 dishes[index].transform.localScale = reverse;
 
-                GameController.instance.addMoney();
+                GameController.instance.addMoney(FruitManager.instance.currentPrice[fruitsInfo[index]]);
 
             }
             yield return new WaitForSeconds(Random.Range(sellTimeMin, sellTimeMax));
@@ -155,13 +165,13 @@ public class FruitManager : MonoBehaviour {
             {
                 int index = 0;
                 do
-                    index = Random.Range(0, fruitPos.Length);
+                    index = Random.Range(0, dishes.Count);
                 while (dishes[index].transform.localScale.Equals(reverse));
 
-                summerFruits[fruitPos[index]].SetActive(false);
+                Destroy(fruits[index]);
                 dishes[index].transform.localScale = reverse;
 
-                GameController.instance.addMoney();
+                GameController.instance.addMoney(FruitManager.instance.currentPrice[fruitsInfo[index]]);
 
             }
             yield return new WaitForSeconds(Random.Range(sellTimeMin, sellTimeMax));
@@ -176,13 +186,13 @@ public class FruitManager : MonoBehaviour {
             {
                 int index = 0;
                 do
-                    index = Random.Range(0, fruitPos.Length);
+                    index = Random.Range(0, dishes.Count);
                 while (dishes[index].transform.localScale.Equals(reverse));
 
-                autumnFruits[fruitPos[index]].SetActive(false);
+                Destroy(fruits[index]);
                 dishes[index].transform.localScale = reverse;
 
-                GameController.instance.addMoney();
+                GameController.instance.addMoney(FruitManager.instance.currentPrice[fruitsInfo[index]]);
             }
             yield return new WaitForSeconds(Random.Range(sellTimeMin, sellTimeMax));
         }
@@ -196,13 +206,13 @@ public class FruitManager : MonoBehaviour {
             {
                 int index = 0;
                 do
-                    index = Random.Range(0, fruitPos.Length);
+                    index = Random.Range(0, dishes.Count);
                 while (dishes[index].transform.localScale.Equals(reverse));
 
-                winterFruits[fruitPos[index]].SetActive(false);
+                Destroy(fruits[index]);
                 dishes[index].transform.localScale = reverse;
 
-                GameController.instance.addMoney();
+                GameController.instance.addMoney(FruitManager.instance.currentPrice[fruitsInfo[index]]);
 
             }
             yield return new WaitForSeconds(Random.Range(sellTimeMin, sellTimeMax));
@@ -213,32 +223,26 @@ public class FruitManager : MonoBehaviour {
     {
         if (!FruitStorage.instance.isEmpty())
         {
-            int index = 0;
-
             while (true)
             {
-                fruitIndex = Random.Range(0, 8);
-                index = fruitIndex;
-                if (index > 3)
-                    index -= 4;
-                if (FruitStorage.instance.springFruits[index] != 0)
-                    if (!springFruits[fruitIndex].activeInHierarchy)
+                fruitIndex = Random.Range(0, 4);
+                if (FruitStorage.instance.springFruits[fruitIndex] != 0)
+                    if (fruits[dishIndex] == null)
                         break;
             }
 
-            FruitStorage.instance.springFruits[index]--;
+            FruitStorage.instance.springFruits[fruitIndex]--;
 
-            springFruits[fruitIndex].SetActive(true);
+            fruits[dishIndex] = Instantiate(springFruits[fruitIndex]);
 
-            if (springFruits[fruitIndex].name.Contains("blueberry"))
-                springFruits[fruitIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 1.15f, 1.0f);
+            if (fruits[dishIndex].name.Contains("blueberry"))
+                fruits[dishIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 1.15f, 1.0f);
             else
-                springFruits[fruitIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 0.89f, 1.0f);
-            dishes[dishIndex].transform.localScale = Vector3.one;
-
-            fruitPos[dishIndex] = fruitIndex;
+                fruits[dishIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 0.89f, 1.0f);
 
             dishes[dishIndex].transform.localScale = Vector3.one;
+
+            fruitsInfo[dishIndex] = fruitIndex;
         }
     }
 
@@ -246,29 +250,22 @@ public class FruitManager : MonoBehaviour {
     {
         if (!FruitStorage.instance.isEmpty())
         {
-            int index = 0;
-
             while (true)
             {
-                fruitIndex = Random.Range(0, 8);
-                index = fruitIndex;
-                if (index > 3)
-                    index -= 4;
-                if (FruitStorage.instance.summerFruits[index] != 0)
-                    if (!summerFruits[fruitIndex].activeInHierarchy)
+                fruitIndex = Random.Range(0, 4);
+                if (FruitStorage.instance.summerFruits[fruitIndex] != 0)
+                    if (fruits[dishIndex] == null)
                         break;
             }
             
-            FruitStorage.instance.summerFruits[index]--;
+            FruitStorage.instance.summerFruits[fruitIndex]--;
 
-            summerFruits[fruitIndex].SetActive(true);
-
-            summerFruits[fruitIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 0.89f, 1.0f);
-            dishes[dishIndex].transform.localScale = Vector3.one;
-
-            fruitPos[dishIndex] = fruitIndex;
+            fruits[dishIndex] = Instantiate(summerFruits[fruitIndex]);
+            fruits[dishIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 0.89f, 1.0f);
 
             dishes[dishIndex].transform.localScale = Vector3.one;
+
+            fruitsInfo[dishIndex] = fruitIndex;
         }
     }
 
@@ -276,30 +273,22 @@ public class FruitManager : MonoBehaviour {
     {
         if (!FruitStorage.instance.isEmpty())
         {
-            int index = 0;
-
             while (true)
             {
-                fruitIndex = Random.Range(0, 9);
-                index = fruitIndex;
-                if (index == 9)
-                    index = 3;
-                else if (index > 3)
-                    index -= 4;
-                if (FruitStorage.instance.autumnFruits[index] != 0)
-                    if (!autumnFruits[fruitIndex].activeInHierarchy)
+                fruitIndex = Random.Range(0, 4);
+                if (FruitStorage.instance.autumnFruits[fruitIndex] != 0)
+                    if (fruits[dishIndex] == null)
                         break;
             }
 
-            FruitStorage.instance.autumnFruits[index]--;
+            FruitStorage.instance.autumnFruits[fruitIndex]--;
 
-            autumnFruits[fruitIndex].SetActive(true);
-            autumnFruits[fruitIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 0.63f, 1.0f);
-            dishes[dishIndex].transform.localScale = Vector3.one;
-
-            fruitPos[dishIndex] = fruitIndex;
+            fruits[dishIndex] = Instantiate(autumnFruits[fruitIndex]);
+            fruits[dishIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 0.63f, 1.0f);
 
             dishes[dishIndex].transform.localScale = Vector3.one;
+
+            fruitsInfo[dishIndex] = fruitIndex;
         }
     }
 
@@ -307,28 +296,22 @@ public class FruitManager : MonoBehaviour {
     {
         if (!FruitStorage.instance.isEmpty())
         {
-            int index = 0;
-
             while (true)
             {
-                fruitIndex = Random.Range(0, 8);
-                index = fruitIndex;
-                if (index > 3)
-                    index -= 4;
-                if (FruitStorage.instance.winterFruits[index] != 0)
-                    if (!winterFruits[fruitIndex].activeInHierarchy)
+                fruitIndex = Random.Range(0, 4);
+                if (FruitStorage.instance.winterFruits[fruitIndex] != 0)
+                    if (fruits[fruitIndex] != null)
                         break;
             }
 
-            FruitStorage.instance.winterFruits[index]--;
+            FruitStorage.instance.winterFruits[fruitIndex]--;
 
-            winterFruits[fruitIndex].SetActive(true);
-            winterFruits[fruitIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 0.63f, 1.0f);
-            dishes[dishIndex].transform.localScale = Vector3.one;
-
-            fruitPos[dishIndex] = fruitIndex;
+            fruits[dishIndex] = Instantiate(winterFruits[fruitIndex]);
+            fruits[dishIndex].transform.position = dishes[dishIndex].transform.position + new Vector3(0.0f, 0.63f, 1.0f);
 
             dishes[dishIndex].transform.localScale = Vector3.one;
+
+            fruitsInfo[dishIndex] = fruitIndex;
         }
     }
 
@@ -374,8 +357,11 @@ public class FruitManager : MonoBehaviour {
                     if (dishes[i].transform.localScale == Vector3.one)
                         dishes[i].transform.localScale = reverse;
 
-                    if (winterFruits[i].activeInHierarchy)
-                        winterFruits[i].SetActive(false);
+                    if (fruits[i] != null)
+                    {
+                        Destroy(fruits[i]);
+                        GameController.instance.addMoney((int)Mathf.Round(FruitManager.instance.currentPrice[fruitsInfo[i]] * 0.3f));
+                    }
                 }
                 StartCoroutine(Sell_SpringFruits());
                 break;
@@ -386,8 +372,11 @@ public class FruitManager : MonoBehaviour {
                     if (dishes[i].transform.localScale == Vector3.one)
                         dishes[i].transform.localScale = reverse;
 
-                    if (springFruits[i].activeInHierarchy)
-                        springFruits[i].SetActive(false);
+                    if (fruits[i] != null)
+                    {
+                        Destroy(fruits[i]);
+                        GameController.instance.addMoney((int)Mathf.Round(FruitManager.instance.currentPrice[fruitsInfo[i]] * 0.3f));
+                    }
                 }
                 StartCoroutine(Sell_SummerFruits());
                 break;
@@ -398,20 +387,26 @@ public class FruitManager : MonoBehaviour {
                     if (dishes[i].transform.localScale == Vector3.one)
                         dishes[i].transform.localScale = reverse;
 
-                    if (summerFruits[i].activeInHierarchy)
-                        summerFruits[i].SetActive(false);
+                    if (fruits[i] != null)
+                    {
+                        Destroy(fruits[i]);
+                        GameController.instance.addMoney((int)Mathf.Round(FruitManager.instance.currentPrice[fruitsInfo[i]] * 0.3f));
+                    }
                 }
                 StartCoroutine(Sell_AutumnFruits());
                 break;
 
             case "Winter":
-                for (int i = 0; i < 9; i++)
+                for (int i = 0; i < 8; i++)
                 {
-                    if (i < 8 && dishes[i].transform.localScale == Vector3.one)
+                    if (dishes[i].transform.localScale == Vector3.one)
                         dishes[i].transform.localScale = reverse;
 
-                    if (autumnFruits[i].activeInHierarchy)
-                        autumnFruits[i].SetActive(false);
+                    if (fruits[i] != null)
+                    {
+                        Destroy(fruits[i]);
+                        GameController.instance.addMoney((int)Mathf.Round(FruitManager.instance.currentPrice[fruitsInfo[i]] * 0.3f));
+                    }
                 }
                 StartCoroutine(Sell_WinterFruits());
                 break;

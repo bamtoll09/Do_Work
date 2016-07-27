@@ -55,8 +55,7 @@ public class Info : MonoBehaviour {
         {
             animator.SetBool("isOpened", true);
             isOpened = true;
-            GameController.canEscape = false;
-            Debug.Log(GameController.canEscape);
+            Debug.Log("Info: " + isOpened);
         }
     }
 
@@ -66,8 +65,7 @@ public class Info : MonoBehaviour {
         {
             animator.SetBool("isOpened", false);
             isOpened = false;
-            GameController.canEscape = true;
-            Debug.Log(GameController.canEscape);
+            Debug.Log("Info: " + isOpened);
         }
     }
 }

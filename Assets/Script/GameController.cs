@@ -18,14 +18,17 @@ public class GameController : MonoBehaviour {
 
     public static bool canEscape = true;
     public static bool seasonChanged = false;
-    public static string SEASON = "Season";
-    public static int totalMoney = 0;
+    public static string SEASON = "Season"; // s
+    public static int totalMoney = 0; // s
+    public static float saveDelay = 60.0f;
     public int money = 0;
-    public static int date = 28;
-    int year = 1;
-    float times = 0.0f;
+    public static int year = 1; // s
+    public static int date = 28; // s
+    public bool tutorialFinish = false; // s
+    float times = 0.0f; // s
     float duration = 0.0f;
-    bool tutorialFinish = false;
+    float saveTime = 0.0f;
+    bool firstTime = true; // s
 
     void Awake()
     {
@@ -38,19 +41,22 @@ public class GameController : MonoBehaviour {
     }
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+    {
+        GetData();
+
         if (tutorialFinish)
             tutorial1.SetActive(false);
         else
             tutorial1.SetActive(true);
         tutorial2.SetActive(false);
-
-        // 저장된 값이 없다면!
-        addMoney(20000);
-
-        SEASON = "Spring";
-        switchInfoTexts();
-
+        
+        if (firstTime)
+        {
+            addMoney(0);
+            switchInfoTexts();
+            firstTime = false;
+        }
 	}
 	
 	// Update is called once per frame
@@ -94,16 +100,24 @@ public class GameController : MonoBehaviour {
 
             if (times >= 5.0f) // 30.0f
             {
-                switchingTIme();
+                switchingTime();
                 Debug.Log(SEASON + ", " + times + ", " + date);
                 times = 0.0f;
             }
+
+            if (saveTime >= GameController.saveDelay)
+            {
+                SaveData();
+                saveTime = 0.0f;
+            }
+
+            saveTime += Time.deltaTime;
 
             times += Time.deltaTime;
         }
 	}
 
-    void switchingTIme()
+    void switchingTime()
     {
         date++;
         if (date >= 30)
@@ -138,6 +152,14 @@ public class GameController : MonoBehaviour {
                     break;
             }
         }
+
+        if (saveTime >= GameController.saveDelay)
+        {
+            SaveData();
+            saveTime = 0.0f;
+        }
+
+        saveTime += Time.deltaTime;
 
         switchInfoTexts();
     }
@@ -239,5 +261,27 @@ public class GameController : MonoBehaviour {
     public void exitGame()
     {
         Application.Quit();
+    }
+
+    void GetData()
+    {
+        SEASON = PlayerPrefs.GetString("Season", "Spring");
+        totalMoney = PlayerPrefs.GetInt("TotalMoney", 200000000);
+        year = PlayerPrefs.GetInt("Year", 1);
+        date = PlayerPrefs.GetInt("Date", 1);
+        times = PlayerPrefs.GetFloat("Times", 0.0f);
+        tutorialFinish = bool.Parse(PlayerPrefs.GetString("TutorialFinish", "false"));
+        firstTime = bool.Parse(PlayerPrefs.GetString("FirstTime", "true"));
+    }
+
+    void SaveData()
+    {
+        PlayerPrefs.GetString("Season", SEASON);
+        PlayerPrefs.GetInt("TotalMoney", totalMoney);
+        PlayerPrefs.GetInt("Year", year);
+        PlayerPrefs.GetInt("Date", date);
+        PlayerPrefs.GetFloat("Times", times);
+        bool.Parse(PlayerPrefs.GetString("TutorialFinish", tutorialFinish.ToString()));
+        bool.Parse(PlayerPrefs.GetString("FirstTime", firstTime.ToString()));
     }
 }

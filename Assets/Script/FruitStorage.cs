@@ -28,6 +28,8 @@ public class FruitStorage : MonoBehaviour {
     string checkSeason = "Season";
     int discountPrice = 0;
     int index = 0;
+    float saveTime = 0.0f;
+    float saveDelay = 60.0f;
 
     void Awake()
     {
@@ -142,6 +144,18 @@ public class FruitStorage : MonoBehaviour {
         }
     }
 
+    void GetData()
+    {
+        string[] _dataArr = PlayerPrefs.GetString("SpringFruitPrice").Split(',');
+        int[] _dataIn = new int[_dataArr.Length];
+        for (int i = 0; i < _dataArr.Length; i++)
+        {
+            _dataIn[i] = int.Parse(_dataArr[i]);
+        }
+
+        springFruits = _dataIn;
+    }
+
     public bool isEmpty()
     {
         bool empty = true;
@@ -224,7 +238,8 @@ public class FruitStorage : MonoBehaviour {
         if (springFruits[0] < Upgrade.창최몇)
         {
             springFruits[0]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[0] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[0] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -233,7 +248,8 @@ public class FruitStorage : MonoBehaviour {
         if (springFruits[1] < Upgrade.창최몇)
         {
             springFruits[1]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[1] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[1] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -242,7 +258,8 @@ public class FruitStorage : MonoBehaviour {
         if (springFruits[2] < Upgrade.창최몇)
         {
             springFruits[2]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[2] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[2] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -251,7 +268,8 @@ public class FruitStorage : MonoBehaviour {
         if (springFruits[3] < Upgrade.창최몇)
         {
             springFruits[3]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[3] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[3] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -260,7 +278,8 @@ public class FruitStorage : MonoBehaviour {
         if (summerFruits[0] < Upgrade.창최몇)
         {
             summerFruits[0]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[0] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[0] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -269,7 +288,8 @@ public class FruitStorage : MonoBehaviour {
         if (summerFruits[1] < Upgrade.창최몇)
         {
             summerFruits[1]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[1] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[1] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -278,7 +298,8 @@ public class FruitStorage : MonoBehaviour {
         if (summerFruits[2] < Upgrade.창최몇)
         {
             summerFruits[2]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[2] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[2] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -287,7 +308,8 @@ public class FruitStorage : MonoBehaviour {
         if (summerFruits[3] < Upgrade.창최몇)
         {
             summerFruits[3]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[3] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[3] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -296,7 +318,8 @@ public class FruitStorage : MonoBehaviour {
         if (autumnFruits[0] < Upgrade.창최몇)
         {
             autumnFruits[0]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[0] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[0] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -305,7 +328,8 @@ public class FruitStorage : MonoBehaviour {
         if (autumnFruits[1] < Upgrade.창최몇)
         {
             autumnFruits[1]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[1] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[1] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -314,7 +338,8 @@ public class FruitStorage : MonoBehaviour {
         if (autumnFruits[2] < Upgrade.창최몇)
         {
             autumnFruits[2]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[2] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[2] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -323,7 +348,8 @@ public class FruitStorage : MonoBehaviour {
         if (autumnFruits[3] < Upgrade.창최몇)
         {
             autumnFruits[3]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[3] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[3] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -332,7 +358,8 @@ public class FruitStorage : MonoBehaviour {
         if (winterFruits[0] < Upgrade.창최몇)
         {
             winterFruits[0]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[0] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[0] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -341,7 +368,8 @@ public class FruitStorage : MonoBehaviour {
         if (winterFruits[1] < Upgrade.창최몇)
         {
             winterFruits[1]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[1] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[1] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -350,7 +378,8 @@ public class FruitStorage : MonoBehaviour {
         if (winterFruits[2] < Upgrade.창최몇)
         {
             winterFruits[2]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[2] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[2] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 
@@ -359,7 +388,8 @@ public class FruitStorage : MonoBehaviour {
         if (winterFruits[3] < Upgrade.창최몇)
         {
             winterFruits[3]++;
-            GameController.instance.addMoney(-1 * (FruitManager.instance.defaultPrice[3] - Upgrade.싸게싸게 / 5));
+            GameController.instance.addMoney(-1 * (FruitManager.instance.currentPrice[3] - Upgrade.싸게싸게 / 5));
+            SoundManager.instance.playBuyFruit();
         }
     }
 }
